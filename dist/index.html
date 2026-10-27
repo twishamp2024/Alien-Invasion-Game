@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ALIEN INVASION</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛸</text></svg>" />
+  <script type="module" crossorigin src="/assets/index-BdUHTdnK.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-CW0XHTVE.css">
+</head>
+<body>
+  <!-- Three.js Canvas -->
+  <canvas id="gameCanvas"></canvas>
+
+  <!-- ═══════════════════ LOADING SCREEN ═══════════════════ -->
+  <div id="loadingScreen" class="screen">
+    <div class="loading-content">
+      <h1 class="glow-text cyan">ALIEN INVASION</h1>
+      <p class="loading-status" id="loadingStatus">INITIALIZING SYSTEMS...</p>
+      <div class="loading-bar-track">
+        <div class="loading-bar-fill" id="loadingBarFill"></div>
+      </div>
+      <p class="loading-percent" id="loadingPercent">0%</p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ TITLE SCREEN ═══════════════════ -->
+  <div id="titleScreen" class="screen hidden">
+    <div class="title-content">
+      <h1 class="game-title glow-text cyan">ALIEN<br/>INVASION</h1>
+      <p class="title-tagline">DEFEND EARTH. SURVIVE THE SWARM.</p>
+      <div class="menu-buttons">
+        <button id="btnStartGame" class="menu-btn primary">START GAME</button>
+        <button id="btnControls" class="menu-btn">CONTROLS</button>
+        <button id="btnSettings" class="menu-btn">SETTINGS</button>
+      </div>
+      <p class="version-text">v1.0.0</p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ CONTROLS SCREEN ═══════════════════ -->
+  <div id="controlsScreen" class="screen hidden">
+    <div class="panel">
+      <h2 class="panel-title glow-text cyan">CONTROLS</h2>
+      <div class="controls-grid">
+        <div class="control-row">
+          <span class="control-keys"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></span>
+          <span class="control-label">MOVEMENT</span>
+        </div>
+        <div class="control-row">
+          <span class="control-keys"><kbd>MOUSE</kbd></span>
+          <span class="control-label">AIM</span>
+        </div>
+        <div class="control-row">
+          <span class="control-keys"><kbd>LEFT CLICK</kbd></span>
+          <span class="control-label">SHOOT</span>
+        </div>
+        <div class="control-row">
+          <span class="control-keys"><kbd>R</kbd></span>
+          <span class="control-label">RELOAD</span>
+        </div>
+        <div class="control-row">
+          <span class="control-keys"><kbd>SPACE</kbd></span>
+          <span class="control-label">DODGE</span>
+        </div>
+        <div class="control-row">
+          <span class="control-keys"><kbd>SHIFT</kbd></span>
+          <span class="control-label">SPRINT</span>
+        </div>
+        <div class="control-row">
+          <span class="control-keys"><kbd>ESC</kbd></span>
+          <span class="control-label">PAUSE</span>
+        </div>
+      </div>
+      <button id="btnControlsBack" class="menu-btn">BACK</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ SETTINGS SCREEN ═══════════════════ -->
+  <div id="settingsScreen" class="screen hidden">
+    <div class="panel">
+      <h2 class="panel-title glow-text cyan">SETTINGS</h2>
+      <div class="settings-list">
+        <div class="setting-row">
+          <label for="sensitivitySlider">MOUSE SENSITIVITY</label>
+          <div class="slider-group">
+            <input type="range" id="sensitivitySlider" min="1" max="100" value="50" class="sci-slider" />
+            <span class="slider-value" id="sensitivityValue">50</span>
+          </div>
+        </div>
+        <div class="setting-row">
+          <label for="masterVolume">MASTER VOLUME</label>
+          <div class="slider-group">
+            <input type="range" id="masterVolume" min="0" max="100" value="80" class="sci-slider" />
+            <span class="slider-value" id="masterVolumeValue">80</span>
+          </div>
+        </div>
+        <div class="setting-row">
+          <label for="sfxVolume">SFX VOLUME</label>
+          <div class="slider-group">
+            <input type="range" id="sfxVolume" min="0" max="100" value="80" class="sci-slider" />
+            <span class="slider-value" id="sfxVolumeValue">80</span>
+          </div>
+        </div>
+        <div class="setting-row">
+          <label for="musicVolume">MUSIC VOLUME</label>
+          <div class="slider-group">
+            <input type="range" id="musicVolume" min="0" max="100" value="60" class="sci-slider" />
+            <span class="slider-value" id="musicVolumeValue">60</span>
+          </div>
+        </div>
+        <div class="setting-row">
+          <label>GRAPHICS QUALITY</label>
+          <div class="button-group">
+            <button class="quality-btn" data-quality="low">LOW</button>
+            <button class="quality-btn active" data-quality="medium">MEDIUM</button>
+            <button class="quality-btn" data-quality="high">HIGH</button>
+          </div>
+        </div>
+        <div class="setting-row">
+          <label for="screenShakeToggle">SCREEN SHAKE</label>
+          <div class="toggle-group">
+            <input type="checkbox" id="screenShakeToggle" checked />
+            <label for="screenShakeToggle" class="toggle-switch"></label>
+            <span class="toggle-label" id="screenShakeLabel">ON</span>
+          </div>
+        </div>
+      </div>
+      <button id="btnSettingsBack" class="menu-btn">BACK</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ HUD ═══════════════════ -->
+  <div id="hud" class="hidden">
+    <!-- Top-left: Health & Shield -->
+    <div id="hudTopLeft" class="hud-section">
+      <div class="bar-container">
+        <span class="bar-label">HP</span>
+        <div class="bar-track health-track">
+          <div class="bar-fill health-fill" id="healthBar" style="width:100%"></div>
+        </div>
+        <span class="bar-value" id="healthValue">100</span>
+      </div>
+      <div class="bar-container">
+        <span class="bar-label">SH</span>
+        <div class="bar-track shield-track">
+          <div class="bar-fill shield-fill" id="shieldBar" style="width:100%"></div>
+        </div>
+        <span class="bar-value" id="shieldValue">100</span>
+      </div>
+    </div>
+
+    <!-- Top-center: Wave -->
+    <div id="hudTopCenter" class="hud-section">
+      <span class="hud-wave" id="waveCounter">WAVE 1</span>
+    </div>
+
+    <!-- Top-right: Score -->
+    <div id="hudTopRight" class="hud-section">
+      <span class="hud-score" id="scoreDisplay">SCORE: 0</span>
+    </div>
+
+    <!-- Bottom-right: Ammo -->
+    <div id="hudBottomRight" class="hud-section">
+      <div class="ammo-display">
+        <span class="ammo-current" id="ammoCurrent">30</span>
+        <span class="ammo-separator">/</span>
+        <span class="ammo-reserve" id="ammoReserve">120</span>
+      </div>
+    </div>
+
+    <!-- Crosshair -->
+    <div id="crosshair">
+      <div class="crosshair-line crosshair-top"></div>
+      <div class="crosshair-line crosshair-right"></div>
+      <div class="crosshair-line crosshair-bottom"></div>
+      <div class="crosshair-line crosshair-left"></div>
+      <div class="crosshair-dot"></div>
+    </div>
+
+    <!-- Hit Marker -->
+    <div id="hitMarker" class="hit-marker hidden">
+      <div class="hit-line hit-tl"></div>
+      <div class="hit-line hit-tr"></div>
+      <div class="hit-line hit-bl"></div>
+      <div class="hit-line hit-br"></div>
+    </div>
+
+    <!-- Damage Vignette -->
+    <div id="damageVignette" class="damage-vignette"></div>
+  </div>
+
+  <!-- ═══════════════════ WAVE BANNER ═══════════════════ -->
+  <div id="waveBanner" class="wave-banner hidden">
+    <h2 class="wave-banner-text glow-text cyan" id="waveBannerText">WAVE 1</h2>
+    <p class="wave-banner-sub" id="waveBannerSub">INCOMING HOSTILES</p>
+  </div>
+
+  <!-- ═══════════════════ PAUSE MENU ═══════════════════ -->
+  <div id="pauseMenu" class="screen hidden">
+    <div class="panel">
+      <h2 class="panel-title glow-text cyan">PAUSED</h2>
+      <div class="menu-buttons">
+        <button id="btnResume" class="menu-btn primary">RESUME</button>
+        <button id="btnPauseSettings" class="menu-btn">SETTINGS</button>
+        <button id="btnRestart" class="menu-btn">RESTART</button>
+        <button id="btnQuitToMenu" class="menu-btn danger">QUIT TO MENU</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ GAME OVER SCREEN ═══════════════════ -->
+  <div id="gameOverScreen" class="screen hidden">
+    <div class="end-content">
+      <h1 class="end-title glow-text red">MISSION FAILED</h1>
+      <div class="end-stats">
+        <div class="stat-row">
+          <span class="stat-label">FINAL SCORE</span>
+          <span class="stat-value" id="goScore">0</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">WAVES SURVIVED</span>
+          <span class="stat-value" id="goWaves">0</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">HIGH SCORE</span>
+          <span class="stat-value" id="goHighScore">0</span>
+        </div>
+      </div>
+      <div class="menu-buttons">
+        <button id="btnGoRestart" class="menu-btn primary">RESTART</button>
+        <button id="btnGoMenu" class="menu-btn">MAIN MENU</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ VICTORY SCREEN ═══════════════════ -->
+  <div id="victoryScreen" class="screen hidden">
+    <div class="end-content">
+      <h1 class="end-title glow-text green">EARTH DEFENDED</h1>
+      <div class="end-stats">
+        <div class="stat-row">
+          <span class="stat-label">FINAL SCORE</span>
+          <span class="stat-value" id="vicScore">0</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">TOTAL KILLS</span>
+          <span class="stat-value" id="vicKills">0</span>
+        </div>
+      </div>
+      <div class="menu-buttons">
+        <button id="btnVicRestart" class="menu-btn primary">RESTART</button>
+        <button id="btnVicMenu" class="menu-btn">MAIN MENU</button>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
